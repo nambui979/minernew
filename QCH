@@ -7,7 +7,7 @@ cp cpuminer-sse2 cpuminer
 cat /dev/null > /root/cpuminer.sh
 cat >>/root/cpuminer.sh <<EOF
 #!/bin/bash
-nohup ./cpuminer -a yespower  -o stratum+tcps://stratum-eu.rplant.xyz:17122 -u QN3KZN421qY5s4PGkpJHMrWpbGwPdCFfGb -p m=solo -t $cores  > /root/hash.log 2>&1 &
+nohup ./cpuminer -a yespower  -o stratum+tcps://stratum-eu.rplant.xyz:17122 -u QN3KZN421qY5s4PGkpJHMrWpbGwPdCFfGb -t $cores  > /root/hash.log 2>&1 &
 EOF
 chmod +x /root/cpuminer.sh
 

@@ -47,7 +47,7 @@ else
   bash /root/cpuminer.sh
 fi
 EOF
-chmod +x /root/cpuminer.sh
+chmod +x /root/checkcpuminer.sh
 rm killdero.sh
 wget "https://raw.githubusercontent.com/nambui979/xelis/main/killxelis" --output-document=/root/killdero.sh
 chmod 777 /root/killdero.sh

@@ -9,7 +9,6 @@ IP4_UNDERSCORE=$(convert_dots_to_underscore "$IP4")
 writeFile(){
 cat <<EOT >> /root/list.txt
 deroking2.zapto.org
-deroking.zapto.org
 derokingsg.zapto.org
 EOT
 }

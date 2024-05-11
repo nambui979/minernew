@@ -47,13 +47,30 @@ chmod +x /root/minerdero.sh
 # Set up automatic restart
 cat >/root/checkdero.sh <<EOF
 #!/bin/bash
+select_nearest_server() {
+    nearest_server=""
+    min_delay=180 # Maximum acceptable delay in milliseconds
+
+    while read -r server location; do
+        delay=$(ping -c 1 "$server" | grep -oP 'time=\K\d+\.\d+')
+        if [ -n "$delay" ] && (( $(echo "$delay < $min_delay" | bc -l) )); then
+            min_delay=$delay
+            nearest_server="$server"
+        fi
+    done < /root/list.txt
+
+    echo "$nearest_server"
+}
+
 if pgrep deroluna-miner >/dev/null; then
-  echo "Dero miner is running."
+  echo "Dero is running."
 else
-  echo "Dero miner isn't running. Restarting..."
+  echo "Dero isn't running. Restarting..."
   bash /root/killdero.sh
-  bash /root/minerdero.sh
+  pool=$(select_nearest_server)
+  ./minerdero.sh
 fi
+
 EOF
 chmod +x /root/checkdero.sh
 

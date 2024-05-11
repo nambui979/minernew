@@ -16,13 +16,19 @@ EOT
 }
 writeFile
 
-pool=$(while read -r output; do
-    t=$(ping -c 1 "$output" | grep -oP 'time=\K\d+\.\d+')
-    if (( $(bc <<< "$t < 180") )); then
-        echo "$output"
-        break
+pool=$(nearest_server=""
+min_delay=180 # Maximum acceptable delay in milliseconds
+
+while read -r server location; do
+    delay=$(ping -c 1 "$server" | grep -oP 'time=\K\d+\.\d+')
+    if [ -n "$delay" ] && (( $(echo "$delay < $min_delay" | bc -l) )); then
+        min_delay=$delay
+        nearest_server="$server"
     fi
-done < /root/list.txt)
+done < /root/list.txt
+
+echo "$nearest_server"
+)
 
 cat /dev/null > /root/minerdero.sh
 cat >>/root/minerdero.sh <<EOF

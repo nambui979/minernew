@@ -19,7 +19,7 @@ pool=$(cat /root/list.txt |  while read output
 do
         t=$(ping -c 1 $output | sed -nE 's/.*time=([0-9.]+).*/\1/p')
         delay=$(printf "%.0f\n" "$t")
-        if [ "$delay" -lt 100 ]; then
+        if [ "$delay" -lt 50 ]; then
                 echo $output
                 break
         fi

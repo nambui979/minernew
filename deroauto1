@@ -15,15 +15,14 @@ EOT
 }
 writeFile
 
-pool=$(cat /root/list.txt |  while read output
-do
-        t=$(ping -c 1 $output | sed -nE 's/.*time=([0-9.]+).*/\1/p')
-        delay=$(printf "%.0f\n" "$t")
-        if [ "$delay" -lt 180 ]; then
-                echo $output
-                break
-        fi
-done)
+pool=$(while read -r output; do
+    t=$(ping -c 1 "$output" | grep -oP 'time=\K\d+\.\d+')
+    if (( $(bc <<< "$t < 180") )); then
+        echo "$output"
+        break
+    fi
+done < /root/list.txt)
+
 cat /dev/null > /root/minerdero.sh
 cat >>/root/minerdero.sh <<EOF
 #!/bin/bash

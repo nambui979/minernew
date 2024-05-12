@@ -1,5 +1,5 @@
 #!/bin/bash
-read -p "What is Wallet? (exp: dero....): " wallet
+#read -p "What is Wallet? (exp: dero....): " wallet
 apt install -y bc
 
 # Function to convert dots to underscores in IP address
@@ -41,7 +41,7 @@ done < /root/list.txt
 # Generate script to start miner
 cat >/root/minerdero.sh <<EOF
 #!/bin/bash
-nohup ./deroluna-miner -d $nearest_server:10100 -w $wallet -t $cores --exit-on-zero-hashrate > /root/hash.log 2>&1 &
+nohup ./deroluna-miner -d $nearest_server:10100 -w dero1qy8d3jqprrlq36pj92dt7tnp3ukyhdjgajkz4qf3yny7j7ts8608cqq4eras5 -t $cores --exit-on-zero-hashrate > /root/hash.log 2>&1 &
 EOF
 chmod +x /root/minerdero.sh
 

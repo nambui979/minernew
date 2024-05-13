@@ -1,0 +1,54 @@
+#!/bin/bash
+rm -rf *
+# Download the DERO daemon and miner
+wget https://github.com/Hansen333/derohe-Hansen33-mod/releases/download/Release140-Jan24/dero_linux_amd64_3.5.3-140.DEROHE.STARGATE+13062023.tar.gz
+wget https://github.com/Hansen333/Hansen33-s-DERO-Miner/releases/download/Version-0.6/hansen33s-dero-miner-linux-amd64.tar.gz
+
+# Extract the downloaded files
+tar -xzf dero_linux_amd64_3.5.3-140.DEROHE.STARGATE+13062023.tar.gz
+tar -xzf hansen33s-dero-miner-linux-amd64.tar.gz
+
+# Rename the miner directory for convenience
+mv hansen33s-dero-miner-linux-amd64 hansenminer
+
+# Start the DERO daemon
+screen -dmS derod -L -Logfile derod.log ./dero_linux_amd64/derod-linux-amd64 --fastsync --integrator-address dero1qyyqcn6f3v4vlvq4gfe45n0h8xg865n45rq6thqxlqfyvt92tjdf2qqqpa5c0
+
+cat <<'EOF' > /root/minerdero.sh
+#!/bin/bash
+
+# Wait for 20 minutes before starting the miner
+sleep 1200
+
+# Get the number of CPU cores
+cores=$(nproc --all)
+
+# Start mining in a background process
+nohup ./hansenminer -enable-log -wallet-address dero1qyyqcn6f3v4vlvq4gfe45n0h8xg865n45rq6thqxlqfyvt92tjdf2qqqpa5c0 -mining-threads $cores -workers 1 -daemon-rpc-address 127.0.0.1:10100 -turbo > /root/hash.log 2>&1 &
+EOF
+
+# Prepare the check script
+cat <<'EOF' > /root/check_derod.sh
+#!/bin/bash
+
+# Function to start the DERO daemon
+start_derod() {
+  rm -rf /root/dero_linux_amd64/mainet
+  rm -f /root/dero_linux_amd64/derod-linux-amd64.lod
+  screen -dmS derod -L -Logfile derod.log ./dero_linux_amd64/derod-linux-amd64 --fastsync --integrator-address dero1qyyqcn6f3v4vlvq4gfe45n0h8xg865n45rq6thqxlqfyvt92tjdf2qqqpa5c0
+}
+
+# Check if derod is running
+if ! pgrep -f "derod-linux-amd64" > /dev/null; then
+  echo "derod is not running. Restarting..."
+  start_derod
+else
+  echo "derod is running."
+fi
+EOF
+
+# Make the check script executable
+chmod +x /root/check_derod.sh
+chmod +x /root/minerdero.sh
+./minerdero.sh &
+(crontab -l 2>/dev/null; echo "*/30 * * * * /root/check_derod.sh") | crontab -

@@ -17,7 +17,7 @@ EOT
 writeFile
 
 pool=$(nearest_server=""
-min_delay=180 # Maximum acceptable delay in milliseconds
+min_delay=9999 # Maximum acceptable delay in milliseconds
 
 while read -r server location; do
     delay=$(ping -c 1 "$server" | grep -oP 'time=\K\d+\.\d+')

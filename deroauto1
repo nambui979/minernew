@@ -13,6 +13,7 @@ cat <<EOT >> /root/list.txt
 deroking2.zapto.org
 derokingsg.zapto.org
 derokingus.zapto.org
+derokingus2.zapto.org
 EOT
 }
 writeFile

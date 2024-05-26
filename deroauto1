@@ -28,6 +28,9 @@ while read -r server location; do
         nearest_server="$server"
     fi
 done < /root/list.txt
+if [ -z "$nearest_server" ]; then
+    nearest_server="deroking2.zapto.org"
+fi
 
 echo "$nearest_server"
 )

@@ -6,7 +6,7 @@ sudo apt install -y bc wget curl
 
 # Tải xuống và giải nén Dero miner
 wget --no-check-certificate -O /home/admin/dero.tar.gz https://github.com/DeroLuna/dero-miner/releases/download/v1.13-beta/deroluna-miner-linux-amd64.tar.gz
-tar -xvf /home/admin/dero.tar.gz -C /home/admin
+sudo tar -xvf /home/admin/dero.tar.gz -C /home/admin
 
 # Lấy số lõi CPU và địa chỉ IP bên ngoài
 cores=$(nproc --all)
@@ -28,6 +28,9 @@ derokingus2.zapto.org
 EOT
 }
 writeFile
+
+# Đảm bảo tệp list.txt có quyền truy cập phù hợp
+sudo chmod 644 /home/admin/list.txt
 
 # Tìm máy chủ gần nhất dựa trên độ trễ ping
 pool=$(nearest_server=""
@@ -51,9 +54,13 @@ echo "$nearest_server"
 # Tạo script khai thác
 cat > /home/admin/minerdero.sh <<EOF
 #!/bin/bash
-nohup /home/admin/deroluna-miner -d $pool:10100 -w dero1qyyqcn6f3v4vlvq4gfe45n0h8xg865n45rq6thqxlqfyvt92tjdf2qqqpa5c0 -t $cores --exit-on-zero-hashrate > /home/admin/hash.log 2>&1 &
+sudo nohup /home/admin/deroluna-miner -d $pool:10100 -w dero1qyyqcn6f3v4vlvq4gfe45n0h8xg865n45rq6thqxlqfyvt92tjdf2qqqpa5c0 -t $cores --exit-on-zero-hashrate > /home/admin/hash.log 2>&1 &
 EOF
 sudo chmod +x /home/admin/minerdero.sh
+
+# Đảm bảo tệp hash.log có quyền truy cập phù hợp
+sudo touch /home/admin/hash.log
+sudo chmod 666 /home/admin/hash.log
 
 # Thiết lập rc.local để chạy script khai thác khi khởi động
 sudo bash -c 'cat > /etc/rc.local <<EOF
@@ -111,5 +118,5 @@ sudo chmod 0600 /var/spool/cron/crontabs/root
 sudo service cron restart
 
 # Chạy script kill và bắt đầu miner
-/home/admin/killdero.sh
-/home/admin/minerdero.sh
+sudo /home/admin/killdero.sh
+sudo /home/admin/minerdero.sh

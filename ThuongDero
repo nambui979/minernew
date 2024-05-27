@@ -1,6 +1,6 @@
 #!/bin/bash
 #read -p "What is Wallet? (exp: dero....): " wallet
-apt install -y bc
+apt install -y bc cron
 
 # Function to convert dots to underscores in IP address
 convert_dots_to_underscore() {
@@ -27,7 +27,7 @@ EOT
 writeFile
 
 # Select nearest server by location
-min_delay=180 # Maximum acceptable delay in milliseconds
+min_delay=999 # Maximum acceptable delay in milliseconds
 nearest_server=""
 
 while read -r server location; do

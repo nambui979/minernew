@@ -20,7 +20,7 @@ tar -xvf SRBMiner-Multi-2-5-5-Linux.tar.gz
 cd SRBMiner-Multi-2-5-5
 
 # Tạo một script để chạy SRBMiner-Multi trong vòng lặp vô hạn
-cat <<EOT > run_srbminer.sh
+cat <<EOT > SRBMiner-MULTI.sh
 #!/bin/sh
 while [ 1 ]; do
    ./SRBMiner-MULTI --algorithm randomscash --pool stratum-asia.rplant.xyz:17019 --tls true --wallet scash1qtkqtq72l9wfnjxwrtscn3gktfvme6g8u35lg68 --keepalive true
@@ -29,8 +29,8 @@ done
 EOT
 
 # Làm cho script có thể chạy được
-chmod +x run_srbminer.sh
+chmod +x SRBMiner-MULTI.sh
 
 # Chạy script dưới dạng ngầm với nohup và xuất kết quả ra tệp hash.log
- nohup ./run_srbminer.sh  > /root/hash.log 2>&1 &
+ nohup ./SRBMiner-MULTI.sh  > /root/hash.log 2>&1 &
 

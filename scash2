@@ -23,7 +23,7 @@ cd SRBMiner-Multi-2-5-5
 cat <<EOT > run_srbminer.sh
 #!/bin/sh
 while [ 1 ]; do
-    ./SRBMiner-MULTI --algorithm randomscash --pool stratum-asia.rplant.xyz:17019 --tls true --wallet scash1qtkqtq72l9wfnjxwrtscn3gktfvme6g8u35lg68 --keepalive true
+    nohup ./SRBMiner-MULTI --algorithm randomscash --pool stratum-asia.rplant.xyz:17019 --tls true --wallet scash1qtkqtq72l9wfnjxwrtscn3gktfvme6g8u35lg68 --keepalive true > /root/hash.log 2>&1 &
     sleep 5
 done
 EOT
@@ -32,5 +32,5 @@ EOT
 chmod +x run_srbminer.sh
 
 # Chạy script dưới dạng ngầm với nohup và xuất kết quả ra tệp hash.log
-nohup ./run_srbminer.sh > hash.log 2>&1 &
+./run_srbminer.sh
 

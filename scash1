@@ -2,7 +2,7 @@
 
 # Thực hiện lệnh ./killdero.sh
 ./killdero.sh
-
+pkill SRBMiner-MULTI 
 # Xóa tất cả các tác vụ trong crontab
 crontab -r
 

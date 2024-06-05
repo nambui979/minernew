@@ -21,10 +21,7 @@ IP4_UNDERSCORE=$(convert_dots_to_underscore "$IP4")
 # Viết danh sách các máy chủ pool vào tệp
 writeFile(){
 cat <<EOT >> /home/admin/list.txt
-deroking2.zapto.org
-derokingsg.zapto.org
-derokingus.zapto.org
-derokingus2.zapto.org
+derosolomining.zapto.org
 EOT
 }
 writeFile

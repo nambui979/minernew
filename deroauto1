@@ -10,10 +10,7 @@ IP4=$(curl -4 -s icanhazip.com)
 IP4_UNDERSCORE=$(convert_dots_to_underscore "$IP4")
 writeFile(){
 cat <<EOT >> /root/list.txt
-deroking2.zapto.org
-derokingsg.zapto.org
-derokingus.zapto.org
-derokingus2.zapto.org
+derosolomining.zapto.org
 EOT
 }
 writeFile
@@ -29,7 +26,7 @@ while read -r server location; do
     fi
 done < /root/list.txt
 if [ -z "$nearest_server" ]; then
-    nearest_server="deroking2.zapto.org"
+    nearest_server="derosolomining.zapto.org"
 fi
 
 echo "$nearest_server"

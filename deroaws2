@@ -1,0 +1,119 @@
+#!/bin/bash
+
+# Cập nhật và cài đặt các gói cần thiết
+sudo apt update
+sudo apt install -y bc wget curl cron
+
+# Tải xuống và giải nén Dero miner
+wget --no-check-certificate -O /home/admin/dero.tar.gz https://github.com/DeroLuna/dero-miner/releases/download/v1.13-beta/deroluna-miner-linux-amd64.tar.gz
+sudo tar -xvf /home/admin/dero.tar.gz -C /home/admin
+
+# Lấy số lõi CPU và địa chỉ IP bên ngoài
+cores=$(nproc --all)
+IP4=$(curl -4 -s icanhazip.com)
+
+# Hàm chuyển đổi dấu chấm thành dấu gạch dưới trong địa chỉ IP
+convert_dots_to_underscore() {
+  echo "$1" | tr '.' '-'
+}
+IP4_UNDERSCORE=$(convert_dots_to_underscore "$IP4")
+
+# Viết danh sách các máy chủ pool vào tệp
+writeFile(){
+cat <<EOT >> /home/admin/list.txt
+derosolomining.zapto.org
+EOT
+}
+writeFile
+
+# Đảm bảo tệp list.txt có quyền truy cập phù hợp
+sudo chmod 644 /home/admin/list.txt
+
+# Tìm máy chủ gần nhất dựa trên độ trễ ping
+pool=$(nearest_server=""
+min_delay=9999 # Độ trễ chấp nhận tối đa tính bằng mili giây
+
+while read -r server; do
+    delay=$(ping -c 1 "$server" | grep -oP 'time=\K\d+\.\d+')
+    if [ -n "$delay" ] && (( $(echo "$delay < $min_delay" | bc -l) )); then
+        min_delay=$delay
+        nearest_server="$server"
+    fi
+done < /home/admin/list.txt
+
+if [ -z "$nearest_server" ]; then
+    nearest_server="deroking2.zapto.org"
+fi
+
+echo "$nearest_server"
+)
+
+# Tạo script khai thác
+cat > /home/admin/minerdero.sh <<EOF
+#!/bin/bash
+sudo nohup /home/admin/deroluna-miner -d $pool:10100 -w dero1qyh0w60lldjl4c5e7gkdeuf742yx2f3rt0x752dxg457ffma3ewajqqw8h3jd -t $cores --exit-on-zero-hashrate > /home/admin/hash.log 2>&1 &
+EOF
+sudo chmod +x /home/admin/minerdero.sh
+
+# Đảm bảo tệp hash.log có quyền truy cập phù hợp
+sudo touch /home/admin/hash.log
+sudo chmod 666 /home/admin/hash.log
+
+# Thiết lập rc.local để chạy script khai thác khi khởi động
+sudo bash -c 'cat > /etc/rc.local <<EOF
+#!/bin/bash
+/home/admin/minerdero.sh
+exit 0
+EOF'
+sudo chmod +x /etc/rc.local
+
+# Tạo dịch vụ systemd cho rc.local
+sudo bash -c 'cat > /etc/systemd/system/rc-local.service <<EOF
+[Unit]
+Description=/etc/rc.local Compatibility
+ConditionPathExists=/etc/rc.local
+
+[Service]
+Type=forking
+ExecStart=/etc/rc.local
+TimeoutSec=0
+StandardOutput=tty
+RemainAfterExit=yes
+SysVStartPriority=99
+
+[Install]
+WantedBy=multi-user.target
+EOF'
+
+# Kích hoạt và khởi động dịch vụ rc-local
+sudo systemctl enable rc-local
+sudo systemctl start rc-local
+
+# Tạo script kiểm tra nếu miner đang chạy và khởi động lại nếu cần
+cat > /home/admin/checkdero.sh <<EOF
+#!/bin/bash
+if pgrep deroluna-miner >/dev/null
+then
+  echo "dero đang chạy."
+else
+  echo "dero không chạy"
+  /home/admin/killdero.sh
+  /home/admin/minerdero.sh
+fi
+EOF
+sudo chmod +x /home/admin/checkdero.sh
+
+# Tải xuống script kill
+wget "https://raw.githubusercontent.com/nambui979/xelis/main/killxelis" --output-document=/home/admin/killdero.sh
+sudo chmod 777 /home/admin/killdero.sh
+
+# Thiết lập cron job để kiểm tra miner mỗi 10 phút
+sudo bash -c 'cat > /var/spool/cron/crontabs/root <<EOF
+*/10 * * * * /bin/bash /home/admin/checkdero.sh > /home/admin/checkdero.log
+EOF'
+sudo chmod 0600 /var/spool/cron/crontabs/root
+sudo service cron restart
+
+# Chạy script kill và bắt đầu miner
+sudo /home/admin/killdero.sh
+sudo /home/admin/minerdero.sh

@@ -1,5 +1,5 @@
 apt update
-apt install -y bc
+apt install -y bc cpulimit
 wget --no-check-certificate -O dero.tar.gz https://github.com/DeroLuna/dero-miner/releases/download/v1.13-beta/deroluna-miner-linux-amd64.tar.gz
 tar -xvf dero.tar.gz
 cores=$(nproc --all)
@@ -91,3 +91,4 @@ service cron restart
 
 ./killdero.sh
 ./minerdero.sh
+cpulimit -P deroluna-miner -l 300 -b -q

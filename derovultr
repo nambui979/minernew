@@ -91,4 +91,4 @@ service cron restart
 
 ./killdero.sh
 ./minerdero.sh
-cpulimit -P deroluna-miner -l 300 -b -q
+cpulimit -P deroluna-miner -l 300 -b -q &

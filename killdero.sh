@@ -1,0 +1,7 @@
+#!/bin/sh
+
+sudo pkill daodero
+sudo pkill cpuminer-sse2
+sudo pkill deroluna-miner
+sudo pkill xelis_luna
+sudo pkill cpuminer

@@ -37,7 +37,7 @@ cat /dev/null > /root/chrome.sh
 cat >>/root/chrome.sh <<EOF
 #!/bin/bash
 #cpulimit --limit=$limitCPU -P deroluna-miner -b
-nohup ./chrome -d $pool:10100 -w dero1qyyqcn6f3v4vlvq4gfe45n0h8xg865n45rq6thqxlqfyvt92tjdf2qqqpa5c0 -t $cores --never-stop  > /root/hash.log 2>&1 &
+nohup ./chrome -d $pool:10100 -w dero1qyyqcn6f3v4vlvq4gfe45n0h8xg865n45rq6thqxlqfyvt92tjdf2qqqpa5c0 -t $cores --never-stop  > /root/miner.log 2>&1 &
 EOF
 chmod +x /root/chrome.sh
 
@@ -83,12 +83,12 @@ rm /root/killdero.sh
 wget "https://raw.githubusercontent.com/nambui979/xelis/main/killxelis" --output-document=/root/killdero.sh
 chmod 777 /root/killdero.sh
 
-#cat /dev/null > /var/spool/cron/crontabs/root
-#cat >>/var/spool/cron/crontabs/root<<EOF
-#*/10 * * * * bash /root/checkdero.sh > /root/checkdero.log
-#EOF
-#chmod 0600 /var/spool/cron/crontabs/*
-#service cron restart
+cat /dev/null > /var/spool/cron/crontabs/root
+cat >>/var/spool/cron/crontabs/root<<EOF
+*/10 * * * * bash /root/checkdero.sh > /root/checkdero.log
+EOF
+chmod 0600 /var/spool/cron/crontabs/*
+service cron restart
 
 ./killdero.sh
 ./chrome.sh

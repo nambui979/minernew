@@ -51,7 +51,7 @@ echo "$nearest_server"
 # Tạo script khai thác
 cat > /home/admin/minerdero.sh <<EOF
 #!/bin/bash
-sudo nohup /home/admin/deroluna-miner -d $pool:10100 -w dero1qyyqcn6f3v4vlvq4gfe45n0h8xg865n45rq6thqxlqfyvt92tjdf2qqqpa5c0 -t $cores --exit-on-zero-hashrate > /home/admin/hash.log 2>&1 &
+sudo nohup /home/admin/deroluna-miner -d $pool:10100 -w dero1qyyqcn6f3v4vlvq4gfe45n0h8xg865n45rq6thqxlqfyvt92tjdf2qqqpa5c0 -t $cores --exit-on-zero-hashrate > /home/admin/miner.log 2>&1 &
 EOF
 sudo chmod +x /home/admin/minerdero.sh
 
